@@ -2,84 +2,80 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>متجر الأحقاف 🇾🇪</title>
     <style>
-       <style>
         body { font-family: Tahoma, sans-serif; background-color: #fcfcfc; margin: 0; padding: 0; }
-        
-        /* التعديل الملكي: لون عنابي مع ذهبي */
-        .header { background-color: #5E0B15; color: #FFD700; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #B8860B; }
-        .header h2 { margin: 0; font-family: 'Arial Black', sans-serif; letter-spacing: 1px; font-size: 28px; text-shadow: 1px 1px 2px #000; }
-        .header p { margin: 5px 0 0 0; color: #F5DEB3; font-size: 14px; }
-        
-        .cart-info { background-color: #ffffff; color: #5E0B15; padding: 15px; border-radius: 8px; font-weight: bold; text-align: center; border: 2px solid #B8860B; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .header { background-color: #5E0B15; color: #FFD700; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #B8860B; position: sticky; top: 0; z-index: 1000; }
+        .header h2 { margin: 0; font-size: 28px; text-shadow: 1px 1px 2px #000; }
+        .cart-info { background-color: #ffffff; color: #5E0B15; padding: 10px 15px; border-radius: 8px; font-weight: bold; text-align: center; border: 2px solid #B8860B; }
         
         .products-grid { display: flex; flex-wrap: wrap; gap: 20px; padding: 30px; justify-content: center; max-width: 1200px; margin: 0 auto; }
         
-        .card { background: white; border-radius: 12px; width: 220px; padding: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid #ddd; display: flex; flex-direction: column; justify-content: space-between; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); border-color: #B8860B; box-shadow: 0 10px 20px rgba(184,134,11,0.2); }
-        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+        .card { background: white; border-radius: 12px; width: 220px; padding: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid #ddd; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); border-color: #B8860B; }
+        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
         
-        .price { color: #5E0B15; font-weight: bold; font-size: 22px; margin: 10px 0;}
-        .category { background: #f4e8e8; color: #5E0B15; font-size: 12px; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; font-weight: bold; }
+        .price { color: #5E0B15; font-weight: bold; font-size: 20px; margin: 10px 0; }
+        .category { background: #f4e8e8; color: #5E0B15; font-size: 12px; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
         
-        /* زر الإضافة للسلة */
-        .btn { background-color: #5E0B15; color: #ffffff; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 10px; font-weight: bold; transition: 0.3s; }
-        .btn:hover { background-color: #8B0000; }
-        
-        .whatsapp-btn { background-color: #25D366; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; }
-        .whatsapp-btn:hover { background-color: #1ebe57; }
-    </style> 
+        .btn { background-color: #5E0B15; color: #ffffff; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .whatsapp-btn { background-color: #25D366; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; margin-top: 10px; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div>
-            <h2>متجر الأحقاف 🛒</h2>
-            <p>وجهتك الأولى للتسوق الشامل في اليمن</p>
-        </div>
-        <div class="cart-info">
-            🛍️ السلة: <span id="cart-count">0</span> | الإجمالي: <span id="cart-total">0</span>$
-            <br>
-            <button class="whatsapp-btn" onclick="sendOrderWhatsApp()">إرسال الطلب عبر واتساب 💬</button>
-        </div>
+
+<div class="header">
+    <div>
+        <h2>متجر الأحقاف 🛒</h2>
+        <p>فخامة التسوق في متناول يدك</p>
     </div>
-    <div class="products-grid">
-        <div class="card">
-            <span class="category">عطور فاخرة</span>
-            <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?w=300" alt="عطر">
-            <h3>عطر رجالي رسمي</h3>
-            <div class="price">45$</div>
-            <button class="btn" onclick="addToCart(45, 0.4)">أضف للسلة</button>
-        </div>
-        
-        <div class="card">
-            <span class="category">ساعات واكسسوارات</span>
-            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300" alt="ساعة">
-            <h3>ساعة كلاسيكية فاخرة</h3>
-            <div class="price">50$</div>
-            <button class="btn" onclick="addToCart(50, 0.3)">أضف للسلة</button>
-        <div class="card">
-            <span class="category">إلكترونيات وهواتف</span>
-            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300" alt="هاتف ذكي">
-            <h3>هاتف ذكي حديث</h3>
-            <div class="price">300$</div>
-            <button class="btn" onclick="addToCart(300, 0.5)">أضف للسلة</button>
-        </div>
+    <div class="cart-info">
+        🛍️ السلة: <span id="cart-count">0</span> | <span id="cart-total">0</span> ر.ي
+        <button class="whatsapp-btn" onclick="sendOrder()">طلب عبر واتساب 💬</button>
     </div>
-    <script>
-        let count = 0; let total = 0;
-        function addToCart(price, weight) {
-            let finalPrice = price + (weight * 15) + 10;
-            count++; total += finalPrice;
-            document.getElementById('cart-count').innerText = count;
-            document.getElementById('cart-total').innerText = total;
-        }
-        function sendOrderWhatsApp() {
-            if (total === 0) { alert("السلة فارغة!"); return; }
-            let url = "https://wa.me/967770000000?text=" + encodeURIComponent("طلب من متجر الأحقاف.\nالإجمالي المطلوب: " + total + "$");
-            window.open(url, '_blank');
-        }
-    </script>
+</div>
+
+<div class="products-grid" id="products-container"></div>
+
+<script>
+    // --- (قائمة المنتجات بالريال اليمني) ---
+    const products = [
+        { name: "عطر الأحقاف الملكي", price: 25000, image: "perfume.jpg", cat: "عطور" },
+        { name: "ساعة كلاسيك ذهبية", price: 35000, image: "watch.jpg", cat: "ساعات" },
+        { name: "هاتف ذكي حديث", price: 150000, image: "phone.jpg", cat: "إلكترونيات" },
+    ];
+
+    const container = document.getElementById('products-container');
+    let count = 0; let total = 0;
+
+    function displayProducts() {
+        container.innerHTML = products.map(p => `
+            <div class="card">
+                <span class="category">${p.cat}</span>
+                <img src="${p.image}" alt="${p.name}">
+                <h3>${p.name}</h3>
+                <div class="price">${p.price.toLocaleString()} ر.ي</div>
+                <button class="btn" onclick="addToCart(${p.price})">أضف للسلة</button>
+            </div>
+        `).join('');
+    }
+
+    function addToCart(price) {
+        count++; total += price;
+        document.getElementById('cart-count').innerText = count;
+        document.getElementById('cart-total').innerText = total.toLocaleString();
+    }
+
+    function sendOrder() {
+        if (total === 0) { alert("السلة فارغة!"); return; }
+        let msg = `مرحباً متجر الأحقاف، أريد طلب منتجات من المتجر.\nالإجمالي المطلوب: ${total.toLocaleString()} ريال يمني.`;
+        // استبدل الرقم 967000000000 برقمك الحقيقي
+        window.open(`https://wa.me/967778900391?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    displayProducts();
+</script>
+
 </body>
 </html>
