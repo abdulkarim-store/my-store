@@ -67,11 +67,18 @@
         document.getElementById('cart-total').innerText = total.toLocaleString();
     }
 
-    function sendOrder() {
+ function sendOrder() {
         if (total === 0) { alert("السلة فارغة!"); return; }
-        let msg = `مرحباً متجر الأحقاف، أريد طلب منتجات من المتجر.\nالإجمالي المطلوب: ${total.toLocaleString()} ريال يمني.`;
-        // استبدل الرقم 967000000000 برقمك الحقيقي
-        window.open(`https://wa.me/967778900391?text=${encodeURIComponent(msg)}`, '_blank');
+        
+        // ضع رقمك هنا بدلاً من الأصفار
+        let myNumber = "967778900391"; 
+        
+        let msg = `مرحباً متجر الأحقاف 🛒\n`;
+        msg += `لقد قمت باختيار منتجات من المتجر.\n`;
+        msg += `إجمالي المبلغ المطلوب: ${total.toLocaleString()} ريال يمني.\n`;
+        msg += `يرجى تأكيد الطلب.`;
+
+        window.open(`https://wa.me/${myNumber}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     displayProducts();
