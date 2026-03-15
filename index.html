@@ -10,22 +10,23 @@
         
         /* الهيدر */
         .header { background-color: #5E0B15; color: #FFD700; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #B8860B; position: sticky; top: 0; z-index: 1000; }
+        .logo-text { font-family: 'Amiri', serif; font-size: 35px; color: #FFD700; text-shadow: 2px 2px 0px #8B4513; margin: 0; line-height: 1; }
         
-        /* تصميم "الشعار النصي" بالخط الملكي */
-        .logo-text { font-family: 'Amiri', serif; font-size: 40px; color: #FFD700; text-shadow: 2px 2px 0px #8B4513, 4px 4px 0px rgba(0,0,0,0.2); margin: 0; line-height: 1; }
-        .sub-text { font-size: 14px; color: #F5DEB3; margin: 5px 0 0 0; font-family: Tahoma, sans-serif; }
-        
-        .cart-info { background-color: #ffffff; color: #5E0B15; padding: 10px 15px; border-radius: 8px; font-weight: bold; text-align: center; border: 2px solid #B8860B; }
+        /* شريط الأقسام */
+        .category-nav { background: #fff; padding: 10px; display: flex; justify-content: center; gap: 10px; border-bottom: 1px solid #ddd; position: sticky; top: 85px; z-index: 999; overflow-x: auto; }
+        .cat-btn { background: #f4e8e8; border: 1px solid #5E0B15; color: #5E0B15; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.3s; }
+        .cat-btn.active, .cat-btn:hover { background: #5E0B15; color: #FFD700; }
+
+        .cart-info { background-color: #ffffff; color: #5E0B15; padding: 8px 12px; border-radius: 8px; font-weight: bold; border: 2px solid #B8860B; font-size: 14px; }
         
         .products-grid { display: flex; flex-wrap: wrap; gap: 20px; padding: 30px; justify-content: center; max-width: 1200px; margin: 0 auto; }
         
         .card { background: white; border-radius: 12px; width: 220px; padding: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid #ddd; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); border-color: #B8860B; }
         .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
-        
         .price { color: #5E0B15; font-weight: bold; font-size: 20px; margin: 10px 0; }
+        
         .btn { background-color: #5E0B15; color: #ffffff; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        .whatsapp-btn { background-color: #25D366; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; margin-top: 10px; }
+        .whatsapp-btn { background-color: #25D366; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; width: 100%; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -33,51 +34,71 @@
 <div class="header">
     <div>
         <h1 class="logo-text">متجر الأحقاف</h1>
-        <p class="sub-text">🇾🇪 فخامة التسوق في متناول يدك</p>
     </div>
     <div class="cart-info">
-        🛍️ السلة: <span id="cart-count">0</span> | <span id="cart-total">0</span> ر.ي
-        <button class="whatsapp-btn" onclick="sendOrder()">طلب عبر واتساب 💬</button>
+        🛍️ <span id="cart-total">0</span> ر.ي
+        <button class="whatsapp-btn" onclick="sendOrder()">طلب واتساب 💬</button>
     </div>
+</div>
+
+<div class="category-nav">
+    <button class="cat-btn active" onclick="filterProducts('الكل', this)">الكل</button>
+    <button class="cat-btn" onclick="filterProducts('عطور', this)">عطور</button>
+    <button class="cat-btn" onclick="filterProducts('ساعات', this)">ساعات</button>
+    <button class="cat-btn" onclick="filterProducts('إلكترونيات', this)">إلكترونيات</button>
 </div>
 
 <div class="products-grid" id="products-container"></div>
 
 <script>
     const products = [
-        { name: "عطر الأحقاف الملكي", price: 25000, image: "perfume.jpg", cat: "عطور" },
-        { name: "ساعة كلاسيك ذهبية", price: 35000, image: "watch.jpg", cat: "ساعات" },
-        { name: "هاتف ذكي حديث", price: 150000, image: "phone.jpg", cat: "إلكترونيات" },
+        { name: "عطر الأحقاف الملكي", price: 25000, image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=400", cat: "عطور" },
+        { name: "ساعة كلاسيك ذهبية", price: 35000, image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400", cat: "ساعات" },
+        { name: "هاتف ذكي حديث", price: 150000, image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400", cat: "إلكترونيات" },
+        { name: "عطر عود فاخر", price: 40000, image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400", cat: "عطور" }
     ];
 
     const container = document.getElementById('products-container');
-    let count = 0; let total = 0;
+    let total = 0;
 
-    function displayProducts() {
-        container.innerHTML = products.map(p => `
-            <div class="card">
-                <img src="${p.image}" alt="${p.name}">
-                <h3>${p.name}</h3>
-                <div class="price">${p.price.toLocaleString()} ر.ي</div>
-                <button class="btn" onclick="addToCart(${p.price})">أضف للسلة</button>
-            </div>
-        `).join('');
+    // وظيفة عرض المنتجات بناءً على القسم
+    function displayProducts(filter = 'الكل') {
+        container.innerHTML = "";
+        const filtered = filter === 'الكل' ? products : products.filter(p => p.cat === filter);
+        
+        filtered.forEach(p => {
+            container.innerHTML += `
+                <div class="card">
+                    <img src="${p.image}" alt="${p.name}">
+                    <h3>${p.name}</h3>
+                    <div class="price">${p.price.toLocaleString()} ر.ي</div>
+                    <button class="btn" onclick="addToCart(${p.price})">أضف للسلة</button>
+                </div>
+            `;
+        });
+    }
+
+    function filterProducts(cat, btn) {
+        // تغيير شكل الزر النشط
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        // عرض المنتجات
+        displayProducts(cat);
     }
 
     function addToCart(price) {
-        count++; total += price;
-        document.getElementById('cart-count').innerText = count;
+        total += price;
         document.getElementById('cart-total').innerText = total.toLocaleString();
     }
 
     function sendOrder() {
         if (total === 0) { alert("السلة فارغة!"); return; }
-        let msg = `مرحباً متجر الأحقاف، أريد طلب منتجات من المتجر.\nالإجمالي: ${total.toLocaleString()} ريال يمني.`;
-        let myNumber = "967778900391"; // لا تنسَ وضع رقمك هنا
+        let myNumber = "967770000000"; // ضـع رقمـك هنا
+        let msg = `مرحباً متجر الأحقاف، أريد طلب منتجات بإجمالي: ${total.toLocaleString()} ريال يمني.`;
         window.open(`https://wa.me/${myNumber}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    displayProducts();
+    displayProducts(); // تشغيل المتجر عند الفتح
 </script>
 
 </body>
