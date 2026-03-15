@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>متجر الأحقاف 🇾🇪</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        .header { background-color: #000000; color: #ffffff; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #333333; }
+        .header h2 { margin: 0; font-family: 'Arial Black', sans-serif; letter-spacing: 1px; font-size: 28px; }
+        .header p { margin: 5px 0 0 0; color: #aaaaaa; font-size: 14px; }
+        .cart-info { background-color: #ffffff; color: #000000; padding: 15px; border-radius: 8px; font-weight: bold; text-align: center; border: 2px solid #000000; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .products-grid { display: flex; flex-wrap: wrap; gap: 20px; padding: 30px; justify-content: center; max-width: 1200px; margin: 0 auto; }
+        .card { background: white; border-radius: 12px; width: 220px; padding: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid #ddd; display: flex; flex-direction: column; justify-content: space-between; }
+        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+        .price { color: #000000; font-weight: bold; font-size: 22px; margin: 10px 0;}
+        .category { background: #eee; color: #555; font-size: 12px; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
+        .btn { background-color: #000000; color: #ffffff; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 10px; font-weight: bold; }
+        .whatsapp-btn { background-color: #25D366; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h2>متجر الأحقاف 🛒</h2>
+            <p>وجهتك الأولى للتسوق الشامل في اليمن</p>
+        </div>
+        <div class="cart-info">
+            🛍️ السلة: <span id="cart-count">0</span> | الإجمالي: <span id="cart-total">0</span>$
+            <br>
+            <button class="whatsapp-btn" onclick="sendOrderWhatsApp()">إرسال الطلب عبر واتساب 💬</button>
+        </div>
+    </div>
+    <div class="products-grid">
+        <div class="card">
+            <span class="category">عطور فاخرة</span>
+            <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?w=300" alt="عطر">
+            <h3>عطر رجالي رسمي</h3>
+            <div class="price">45$</div>
+            <button class="btn" onclick="addToCart(45, 0.4)">أضف للسلة</button>
+        </div>
+        
+        <div class="card">
+            <span class="category">ساعات واكسسوارات</span>
+            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300" alt="ساعة">
+            <h3>ساعة كلاسيكية فاخرة</h3>
+            <div class="price">50$</div>
+            <button class="btn" onclick="addToCart(50, 0.3)">أضف للسلة</button>
+        </div>
+    </div>
+    <script>
+        let count = 0; let total = 0;
+        function addToCart(price, weight) {
+            let finalPrice = price + (weight * 15) + 10;
+            count++; total += finalPrice;
+            document.getElementById('cart-count').innerText = count;
+            document.getElementById('cart-total').innerText = total;
+        }
+        function sendOrderWhatsApp() {
+            if (total === 0) { alert("السلة فارغة!"); return; }
+            let url = "https://wa.me/967770000000?text=" + encodeURIComponent("طلب من متجر الأحقاف.\nالإجمالي المطلوب: " + total + "$");
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
