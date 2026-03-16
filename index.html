@@ -6,61 +6,66 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&display=swap" rel="stylesheet">
     <title>متجر الأحقاف 🇾🇪</title>
     <style>
-        body { font-family: Tahoma, sans-serif; background-color: #fcfcfc; margin: 0; padding: 0; }
-        .header { background-color: #5E0B15; color: #FFD700; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #B8860B; position: sticky; top: 0; z-index: 1000; }
-        .logo-text { font-family: 'Amiri', serif; font-size: 35px; color: #FFD700; text-shadow: 2px 2px 0px #8B4513; margin: 0; line-height: 1; }
+        :root { --main-color: #5E0B15; --gold-color: #D4AF37; --light-gold: #FFD700; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; }
         
-        /* شريط الأقسام المطور */
-        .category-nav { background: #fff; padding: 10px; display: flex; justify-content: center; gap: 10px; border-bottom: 1px solid #ddd; position: sticky; top: 85px; z-index: 999; overflow-x: auto; white-space: nowrap; }
-        .cat-btn { background: #f4e8e8; border: 1px solid #5E0B15; color: #5E0B15; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .cat-btn.active, .cat-btn:hover { background: #5E0B15; color: #FFD700; }
+        .header { background: linear-gradient(135deg, var(--main-color), #3e070e); color: var(--light-gold); padding: 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid var(--gold-color); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .logo-text { font-family: 'Amiri', serif; font-size: 38px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin: 0; }
+        
+        .category-nav { background: white; padding: 12px; display: flex; justify-content: center; gap: 10px; overflow-x: auto; border-bottom: 1px solid #ddd; position: sticky; top: 95px; z-index: 999; }
+        .cat-btn { background: #fdf2f2; border: 1px solid var(--main-color); color: var(--main-color); padding: 8px 18px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.3s; white-space: nowrap; }
+        .cat-btn.active { background: var(--main-color); color: var(--light-gold); }
 
-        .cart-info { background-color: #ffffff; color: #5E0B15; padding: 8px 12px; border-radius: 8px; font-weight: bold; border: 2px solid #B8860B; }
-        .products-grid { display: flex; flex-wrap: wrap; gap: 20px; padding: 30px; justify-content: center; max-width: 1200px; margin: 0 auto; }
-        .card { background: white; border-radius: 12px; width: 220px; padding: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid #ddd; transition: 0.3s; }
-        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
-        .price { color: #5E0B15; font-weight: bold; font-size: 20px; margin: 10px 0; }
-        .btn { background-color: #5E0B15; color: #ffffff; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        .whatsapp-btn { background-color: #25D366; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; width: 100%; margin-top: 5px; }
+        .cart-status { background: white; color: var(--main-color); padding: 8px 15px; border-radius: 10px; font-weight: bold; border: 2px solid var(--gold-color); }
+        
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 25px; max-width: 1200px; margin: 0 auto; }
+        .card { background: white; border-radius: 15px; padding: 15px; text-align: center; box-shadow: 0 6px 12px rgba(0,0,0,0.08); border: 1px solid #eee; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); border-color: var(--gold-color); }
+        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; }
+        .card h3 { font-size: 19px; margin: 10px 0; color: #333; }
+        .product-id { font-size: 12px; color: #777; display: block; margin-bottom: 5px; }
+        .price { color: var(--main-color); font-weight: bold; font-size: 22px; margin-bottom: 15px; }
+        
+        .btn { background: var(--main-color); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .whatsapp-float { position: fixed; bottom: 20px; left: 20px; background: #25D366; color: white; padding: 15px 30px; border-radius: 50px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 20px rgba(0,0,0,0.4); z-index: 1001; cursor: pointer; border: 2px solid white; }
+        
+        #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 1002; right: 30px; bottom: 30px; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
 </head>
 <body>
 
+<div id="toast">تمت الإضافة للسلة 🛒</div>
+
 <div class="header">
-    <div><h1 class="logo-text">متجر الأحقاف</h1></div>
-    <div class="cart-info">
+    <h1 class="logo-text">متجر الأحقاف</h1>
+    <div class="cart-status">
         🛍️ <span id="cart-total">0</span> ر.ي
-        <button class="whatsapp-btn" onclick="sendOrder()">طلب واتساب 💬</button>
     </div>
 </div>
 
-<div class="category-nav">
-    <button class="cat-btn active" onclick="filterProducts('الكل', this)">الكل</button>
-    <button class="cat-btn" onclick="filterProducts('عطور', this)">عطور</button>
-    <button class="cat-btn" onclick="filterProducts('ساعات', this)">ساعات</button>
-    <button class="cat-btn" onclick="filterProducts('إلكترونيات', this)">إلكترونيات</button>
-    <button class="cat-btn" onclick="filterProducts('ملابس', this)">ملابس</button>
-    <button class="cat-btn" onclick="filterProducts('أدوات منزلية', this)">أدوات منزلية</button>
-</div>
+<div class="category-nav" id="cat-nav"></div>
 
 <div class="products-grid" id="products-container"></div>
 
+<div class="whatsapp-float" onclick="sendOrder()">
+    إرسال الطلب عبر واتساب 💬
+</div>
+
 <script>
+    // قائمة المنتجات (عدلها لاحقاً بصورك الحقيقية)
     const products = [
-        // قسم العطور
-        { name: "عطر الأحقاف الملكي", price: 25000, image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=400", cat: "عطور" },
-        // قسم الساعات
-        { name: "ساعة كلاسيك ذهبية", price: 35000, image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400", cat: "ساعات" },
-        // قسم الإلكترونيات
-        { name: "هاتف ذكي حديث", price: 150000, image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400", cat: "إلكترونيات" },
-        // قسم الملابس (جديد)
-        { name: "طقم رجالي فاخر", price: 45000, image: "https://images.unsplash.com/photo-1594932224828-b4b059b6ffec?w=400", cat: "ملابس" },
-        // قسم الأدوات المنزلية (جديد)
-        { name: "طقم أواني سيراميك", price: 60000, image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400", cat: "أدوات منزلية" }
+        { id: "AQ-01", name: "عطر الأحقاف الملكي", price: 25000, image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=400", cat: "عطور" },
+        { id: "AQ-02", name: "ساعة كلاسيك ذهبية", price: 35000, image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400", cat: "ساعات" },
+        { id: "AQ-03", name: "هاتف ذكي حديث", price: 150000, image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400", cat: "إلكترونيات" },
+        { id: "AQ-04", name: "طقم رجالي فاخر", price: 45000, image: "https://images.unsplash.com/photo-1594932224828-b4b059b6ffec?w=400", cat: "ملابس" },
+        { id: "AQ-05", name: "طقم أواني سيراميك", price: 60000, image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400", cat: "أدوات منزلية" }
     ];
 
+    let cart = [];
     const container = document.getElementById('products-container');
-    let total = 0;
 
     function displayProducts(filter = 'الكل') {
         container.innerHTML = "";
@@ -69,12 +74,19 @@
             container.innerHTML += `
                 <div class="card">
                     <img src="${p.image}" alt="${p.name}">
+                    <span class="product-id">ID: ${p.id}</span>
                     <h3>${p.name}</h3>
                     <div class="price">${p.price.toLocaleString()} ر.ي</div>
-                    <button class="btn" onclick="addToCart(${p.price})">أضف للسلة</button>
+                    <button class="btn" onclick="addToCart('${p.id}')">أضف للسلة</button>
                 </div>`;
         });
     }
+
+    const categories = ['الكل', ...new Set(products.map(p => p.cat))];
+    const nav = document.getElementById('cat-nav');
+    categories.forEach(cat => {
+        nav.innerHTML += `<button class="cat-btn ${cat==='الكل'?'active':''}" onclick="filterProducts('${cat}', this)">${cat}</button>`;
+    });
 
     function filterProducts(cat, btn) {
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
@@ -82,15 +94,36 @@
         displayProducts(cat);
     }
 
-    function addToCart(price) {
-        total += price;
-        document.getElementById('cart-total').innerText = total.toLocaleString();
+    function addToCart(productId) {
+        const item = products.find(p => p.id === productId);
+        cart.push(item);
+        document.getElementById('cart-total').innerText = cart.reduce((s, i) => s + i.price, 0).toLocaleString();
+        showToast();
+    }
+
+    function showToast() {
+        const x = document.getElementById("toast");
+        x.className = "show";
+        setTimeout(() => { x.className = x.className.replace("show", ""); }, 3000);
     }
 
     function sendOrder() {
-        if (total === 0) { alert("السلة فارغة!"); return; }
-        let myNumber = "967778900391"; // ضـع رقمـك هنا (هام جداً)
-        let msg = `مرحباً متجر الأحقاف 🛒\nأريد طلب منتجات من المتجر.\nالإجمالي: ${total.toLocaleString()} ريال يمني.`;
+        if (cart.length === 0) { alert("السلة فارغة!"); return; }
+        
+        const total = cart.reduce((sum, item) => sum + item.price, 0);
+        let msg = `*طلب جديد - متجر الأحقاف* 🛒\n\n`;
+        msg += `قائمة الطلبات:\n`;
+        
+        cart.forEach((item, index) => {
+            msg += `${index + 1}. ${item.name} (${item.id}) - ${item.price.toLocaleString()} ر.ي\n`;
+        });
+
+        msg += `\n💰 *الإجمالي: ${total.toLocaleString()} ريال يمني*\n`;
+        msg += `\nرابط المتجر: ${window.location.href}`;
+
+        // --- رقمك تم تحديثه هنا بنجاح ---
+        let myNumber = "967778900391"; 
+        
         window.open(`https://wa.me/${myNumber}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
