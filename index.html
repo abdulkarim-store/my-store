@@ -19,8 +19,16 @@
         .cat-btn-sport.active { background: var(--sport-color) !important; color: white; border-color: var(--sport-color); }
 
         .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; max-width: 1200px; margin: 0 auto; }
-        .card { background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        
+        /* تنسيق الكرت مع دعم الملصقات */
+        .card { position: relative; background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border: 1px solid #eee; overflow: hidden; }
         .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; }
+        
+        /* تصميم الملصقات (Badges) */
+        .badge { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 5px; color: white; font-size: 11px; font-weight: bold; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .badge-new { background: #28a745; } /* أخضر للجديد */
+        .badge-discount { background: #dc3545; } /* أحمر للتخفيض */
+
         .product-desc { font-size: 11px; color: #777; margin: 5px 0; background: #f9f9f9; padding: 3px; border-radius: 4px; }
         .price { color: var(--main-color); font-weight: bold; font-size: 17px; margin: 8px 0; }
         .btn-add { background: var(--main-color); color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; }
@@ -53,41 +61,37 @@
     <button class="cat-btn active" onclick="filterProducts('الكل', this)">الكل</button>
 </div>
 
-<div id="loading">جاري تحميل البضاعة من المخزن... 🔄</div>
+<div id="loading">جاري مزامنة المخزن... 🔄</div>
 <div class="products-grid" id="products-container"></div>
 
 <div class="cart-container" id="cart-box">
-    <h3 style="text-align: center; margin: 0 0 15px 0; color: var(--main-color);">مراجعة وتأكيد الطلب 📝</h3>
-    <div id="cart-list" style="margin-bottom: 15px;"></div>
+    <h3 style="text-align: center; margin: 0 0 15px 0; color: var(--main-color);">تأكيد الطلبية 📋</h3>
+    <div id="cart-list"></div>
     <div class="checkout-form">
         <label>الاسم الكامل:</label>
-        <input type="text" id="cust-name" placeholder="أدخل اسمك هنا">
-        <label>العنوان (المنطقة والشارع):</label>
-        <input type="text" id="cust-address" placeholder="مثال: المكلا - فوه - خلف...">
-        <label>طريقة التوصيل:</label>
+        <input type="text" id="cust-name">
+        <label>العنوان:</label>
+        <input type="text" id="cust-address">
+        <label>التوصيل:</label>
         <select id="delivery-type" onchange="updateCartUI()">
-            <option value="0">استلام من المحل (مجاناً)</option>
-            <option value="1000">توصيل داخل المدينة (1,000 ر.ي)</option>
-            <option value="3000">توصيل خارج المدينة (3,000 ر.ي)</option>
+            <option value="0">استلام من المحل</option>
+            <option value="1000">داخل المدينة (1,000 ر.ي)</option>
+            <option value="3000">خارج المدينة (3,000 ر.ي)</option>
         </select>
-        <label>طريقة الدفع:</label>
+        <label>الدفع:</label>
         <select id="payment-method">
-            <option value="الدفع عند الاستلام">الدفع عند الاستلام</option>
-            <option value="تحويل عبر الكريمي">تحويل عبر الكريمي</option>
-            <option value="تحويل عبر النجم/الامتياز">تحويل عبر النجم/الامتياز</option>
+            <option value="عند الاستلام">عند الاستلام</option>
+            <option value="الكريمي">تحويل الكريمي</option>
+            <option value="النجم">تحويل النجم</option>
         </select>
     </div>
-    <div class="final-price">الإجمالي النهائي: <span id="cart-total">0</span> ر.ي</div>
-    <button class="btn-send" onclick="sendOrder()">إرسال الطلب عبر واتساب 💬</button>
-    <div style="text-align:center; margin-top:10px;">
-        <button style="background:none; border:none; color:gray; cursor:pointer; text-decoration:underline;" onclick="closeCart()">تعديل السلة</button>
-    </div>
+    <div class="final-price">الإجمالي: <span id="cart-total">0</span> ر.ي</div>
+    <button class="btn-send" onclick="sendOrder()">إرسال الطلب واتساب 💬</button>
+    <button style="width:100%; background:none; border:none; color:gray; margin-top:10px;" onclick="closeCart()">إغلاق</button>
 </div>
 
 <script>
-    // الرابط السحري الخاص بك
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQHC7riu2zON61mN-dYSfUanReM2Z8dvRDIzWcCIIExj5EHSp7Z-Nnnu8IW14EX7pXEkzChZjkabMTx/pub?output=csv";
-
     let allProducts = [];
     let cart = [];
 
@@ -95,27 +99,26 @@
         try {
             const response = await fetch(sheetURL);
             const data = await response.text();
-            const rows = data.split('\n').slice(1); // تجاهل العناوين
+            const rows = data.split('\n').slice(1);
             
             allProducts = rows.map(row => {
-                const columns = row.split(',');
-                if (columns.length < 5) return null;
+                const col = row.split(',');
+                if (col.length < 5) return null;
                 return {
-                    id: columns[0].trim(),
-                    name: columns[1].trim(),
-                    price: parseInt(columns[2].trim()),
-                    image: columns[3].trim(),
-                    cat: columns[4].trim(),
-                    desc: columns[5] ? columns[5].trim() : ""
+                    id: col[0].trim(),
+                    name: col[1].trim(),
+                    price: parseInt(col[2].trim()),
+                    image: col[3].trim(),
+                    cat: col[4].trim(),
+                    desc: col[5] ? col[5].trim() : "",
+                    status: col[6] ? col[6].trim() : "" // العمود الجديد للملصقات
                 };
             }).filter(p => p !== null);
 
             document.getElementById('loading').style.display = 'none';
             createCategoryButtons();
             displayProducts();
-        } catch (error) {
-            document.getElementById('loading').innerText = "حدث خطأ في تحميل البيانات. تأكد من إعدادات النشر في جوجل شيت.";
-        }
+        } catch (e) { document.getElementById('loading').innerText = "خطأ في الاتصال بالمخزن"; }
     }
 
     function createCategoryButtons() {
@@ -132,9 +135,15 @@
         container.innerHTML = "";
         const filtered = filter === 'الكل' ? allProducts : allProducts.filter(p => p.cat === filter);
         filtered.forEach(p => {
+            // منطق عرض الملصق
+            let badgeHTML = "";
+            if (p.status === "جديد") badgeHTML = `<div class="badge badge-new">وصل حديثاً</div>`;
+            else if (p.status === "تخفيض") badgeHTML = `<div class="badge badge-discount">عرض خاص</div>`;
+
             container.innerHTML += `
                 <div class="card">
-                    <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/150'">
+                    ${badgeHTML}
+                    <img src="${p.image}" onerror="this.src='https://via.placeholder.com/150'">
                     <h3 style="font-size:13px; margin:5px 0;">${p.name}</h3>
                     <div class="product-desc">${p.desc}</div>
                     <div class="price">${p.price.toLocaleString()} ر.ي</div>
@@ -165,46 +174,27 @@
         const cartBox = document.getElementById('cart-box');
         const list = document.getElementById('cart-list');
         const totalSpan = document.getElementById('cart-total');
-        const deliveryCost = parseInt(document.getElementById('delivery-type').value);
-        
+        const delivery = parseInt(document.getElementById('delivery-type').value);
         if (cart.length > 0) {
             cartBox.style.display = 'block';
-            list.innerHTML = cart.map(item => `
-                <div class="cart-item">
-                    <span>${item.name}</span>
-                    <div>
-                        <span style="font-weight:bold; margin-left:10px;">${item.price.toLocaleString()}</span>
-                        <button style="border:none; background:none; color:red; cursor:pointer;" onclick="removeFromCart(${item.cartId})">❌</button>
-                    </div>
-                </div>
-            `).join('');
+            list.innerHTML = cart.map(item => `<div class="cart-item"><span>${item.name}</span><button onclick="removeFromCart(${item.cartId})" style="border:none;background:none;color:red;">❌</button></div>`).join('');
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            totalSpan.innerText = (subtotal + deliveryCost).toLocaleString();
-        } else {
-            cartBox.style.display = 'none';
-        }
+            totalSpan.innerText = (subtotal + delivery).toLocaleString();
+        } else { cartBox.style.display = 'none'; }
     }
 
     function closeCart() { document.getElementById('cart-box').style.display = 'none'; }
-    function showToast() {
-        const x = document.getElementById("toast");
-        x.className = "show";
-        setTimeout(() => { x.className = ""; }, 3000);
-    }
+    function showToast() { const x = document.getElementById("toast"); x.className = "show"; setTimeout(() => { x.className = ""; }, 3000); }
 
     function sendOrder() {
         const name = document.getElementById('cust-name').value;
-        const address = document.getElementById('cust-address').value;
-        const deliveryType = document.getElementById('delivery-type').options[document.getElementById('delivery-type').selectedIndex].text;
-        const deliveryCost = parseInt(document.getElementById('delivery-type').value);
-        const payment = document.getElementById('payment-method').value;
-
-        if (!name || !address) { alert("أدخل بياناتك لخدمتك!"); return; }
-
+        const addr = document.getElementById('cust-address').value;
+        if (!name || !addr) { alert("أكمل بياناتك!"); return; }
         const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-        let msg = `*طلب جديد - متجر الأحقاف* 🛒\n\n👤 *الزبون:* ${name}\n📍 *العنوان:* ${address}\n--------------------------\n`;
-        cart.forEach((item, index) => { msg += `${index + 1}. ${item.name} (${item.id})\n`; });
-        msg += `--------------------------\n🚚 *التوصيل:* ${deliveryType}\n💳 *طريقة الدفع:* ${payment}\n💰 *الإجمالي: ${(subtotal + deliveryCost).toLocaleString()} ر.ي*`;
+        const deliveryCost = parseInt(document.getElementById('delivery-type').value);
+        let msg = `*طلب جديد - متجر الأحقاف*\n👤 الزبون: ${name}\n📍 العنوان: ${addr}\n----------------\n`;
+        cart.forEach((item, i) => { msg += `${i+1}. ${item.name} (${item.id})\n`; });
+        msg += `----------------\n💰 الإجمالي: ${(subtotal + deliveryCost).toLocaleString()} ر.ي`;
         window.open(`https://wa.me/967778900391?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
