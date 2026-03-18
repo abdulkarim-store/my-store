@@ -9,23 +9,8 @@
         :root { --main-color: #5E0B15; --gold-color: #D4AF37; --light-gold: #FFD700; --sport-color: #0056b3; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; padding-bottom: 120px; }
         
-        /* الهيدر المحدث (توسيط كامل) */
-        .header { 
-            background: linear-gradient(135deg, var(--main-color), #3e070e); 
-            color: var(--light-gold); 
-            padding: 20px 10px; 
-            text-align: center; /* لتوسيط كل شيء بداخله */
-            border-bottom: 4px solid var(--gold-color); 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000; 
-        }
-        .logo-text { 
-            font-family: 'Amiri', serif; 
-            font-size: 35px; 
-            margin: 0; 
-            display: block; /* لضمان أخذ السطر كاملاً وتوسيطه */
-        }
+        .header { background: linear-gradient(135deg, var(--main-color), #3e070e); color: var(--light-gold); padding: 20px 10px; text-align: center; border-bottom: 4px solid var(--gold-color); position: sticky; top: 0; z-index: 1000; }
+        .logo-text { font-family: 'Amiri', serif; font-size: 35px; margin: 0; display: block; }
         .tagline { font-size: 13px; color: var(--light-gold); opacity: 0.9; margin-top: 5px; }
         
         .category-nav { background: white; padding: 10px; display: flex; justify-content: center; gap: 8px; overflow-x: auto; border-bottom: 1px solid #ddd; position: sticky; top: 98px; z-index: 999; }
@@ -50,6 +35,7 @@
         .final-price { font-size: 22px; font-weight: bold; color: var(--main-color); text-align: center; margin: 10px 0; }
         .btn-send { background: #25D366; color: white; border: none; padding: 15px; border-radius: 35px; font-weight: bold; cursor: pointer; width: 100%; font-size: 17px; }
 
+        #loading { text-align: center; padding: 50px; font-weight: bold; color: var(--main-color); }
         #toast { visibility: hidden; background: #333; color: #fff; text-align: center; border-radius: 30px; padding: 10px 20px; position: fixed; z-index: 3000; left: 50%; transform: translateX(-50%); bottom: 150px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
     </style>
@@ -63,28 +49,27 @@
     <div class="tagline">الفخامة والجودة بين يديك 🇾🇪</div>
 </div>
 
-<div class="category-nav" id="cat-nav"></div>
+<div class="category-nav" id="cat-nav">
+    <button class="cat-btn active" onclick="filterProducts('الكل', this)">الكل</button>
+</div>
+
+<div id="loading">جاري تحميل البضاعة من المخزن... 🔄</div>
 <div class="products-grid" id="products-container"></div>
 
 <div class="cart-container" id="cart-box">
     <h3 style="text-align: center; margin: 0 0 15px 0; color: var(--main-color);">مراجعة وتأكيد الطلب 📝</h3>
-    
     <div id="cart-list" style="margin-bottom: 15px;"></div>
-
     <div class="checkout-form">
         <label>الاسم الكامل:</label>
         <input type="text" id="cust-name" placeholder="أدخل اسمك هنا">
-        
         <label>العنوان (المنطقة والشارع):</label>
         <input type="text" id="cust-address" placeholder="مثال: المكلا - فوه - خلف...">
-
         <label>طريقة التوصيل:</label>
         <select id="delivery-type" onchange="updateCartUI()">
             <option value="0">استلام من المحل (مجاناً)</option>
             <option value="1000">توصيل داخل المدينة (1,000 ر.ي)</option>
             <option value="3000">توصيل خارج المدينة (3,000 ر.ي)</option>
         </select>
-
         <label>طريقة الدفع:</label>
         <select id="payment-method">
             <option value="الدفع عند الاستلام">الدفع عند الاستلام</option>
@@ -92,7 +77,6 @@
             <option value="تحويل عبر النجم/الامتياز">تحويل عبر النجم/الامتياز</option>
         </select>
     </div>
-
     <div class="final-price">الإجمالي النهائي: <span id="cart-total">0</span> ر.ي</div>
     <button class="btn-send" onclick="sendOrder()">إرسال الطلب عبر واتساب 💬</button>
     <div style="text-align:center; margin-top:10px;">
@@ -101,30 +85,56 @@
 </div>
 
 <script>
-    const products = [
-        { id: "BW-01", name: "ساعة ولادي موديل 1", price: 12000, image: "watch_boy1.jpg.jpg", cat: "ساعات ولادي", desc: "ضد الماء - ضمان سنة" },
-        { id: "BW-02", name: "ساعة ولادي موديل 2", price: 12000, image: "watch_boy2.jpg.jpg", cat: "ساعات ولادي", desc: "ضد الماء - ضمان سنة" },
-        { id: "BW-03", name: "ساعة ولادي موديل 3", price: 12000, image: "watch_boy3.jpg.jpg", cat: "ساعات ولادي", desc: "ضد الماء - ضمان سنة" },
-        { id: "BW-04", name: "ساعة ولادي موديل 4", price: 12000, image: "watch_boy4.jpg.jpg", cat: "ساعات ولادي", desc: "ضد الماء - ضمان سنة" },
-        { id: "BW-05", name: "ساعة ولادي موديل 5", price: 12000, image: "watch_boy5.jpg.jpg", cat: "ساعات ولادي", desc: "ضد الماء - ضمان سنة" },
-        { id: "BW-06", name: "ساعة ولادي موديل 6", price: 12000, image: "watch_boy6.jpg.jpg", cat: "ساعات ولادي", desc: "ضد الماء - ضمان سنة" },
-        { id: "SP-01", name: "طقم رياضي موديل 1", price: 10000, image: "sport_1.jpg.jpg", cat: "ملابس رياضية", desc: "خامة ممتازة - جميع المقاسات" },
-        { id: "SP-02", name: "طقم رياضي موديل 2", price: 10000, image: "sport_2.jpg.jpg", cat: "ملابس رياضية", desc: "خامة ممتازة - جميع المقاسات" },
-        { id: "SP-03", name: "طقم رياضي موديل 3", price: 10000, image: "sport_3.jpg.jpg", cat: "ملابس رياضية", desc: "خامة ممتازة - جميع المقاسات" },
-        { id: "SP-04", name: "طقم رياضي موديل 4", price: 10000, image: "sport_4.jpg.jpg", cat: "ملابس رياضية", desc: "خامة ممتازة - جميع المقاسات" },
-        { id: "SP-05", name: "طقم رياضي موديل 5", price: 10000, image: "sport_5.jpg.jpg", cat: "ملابس رياضية", desc: "خامة ممتازة - جميع المقاسات" }
-    ];
+    // الرابط السحري الخاص بك
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQHC7riu2zON61mN-dYSfUanReM2Z8dvRDIzWcCIIExj5EHSp7Z-Nnnu8IW14EX7pXEkzChZjkabMTx/pub?output=csv";
 
+    let allProducts = [];
     let cart = [];
+
+    async function loadProducts() {
+        try {
+            const response = await fetch(sheetURL);
+            const data = await response.text();
+            const rows = data.split('\n').slice(1); // تجاهل العناوين
+            
+            allProducts = rows.map(row => {
+                const columns = row.split(',');
+                if (columns.length < 5) return null;
+                return {
+                    id: columns[0].trim(),
+                    name: columns[1].trim(),
+                    price: parseInt(columns[2].trim()),
+                    image: columns[3].trim(),
+                    cat: columns[4].trim(),
+                    desc: columns[5] ? columns[5].trim() : ""
+                };
+            }).filter(p => p !== null);
+
+            document.getElementById('loading').style.display = 'none';
+            createCategoryButtons();
+            displayProducts();
+        } catch (error) {
+            document.getElementById('loading').innerText = "حدث خطأ في تحميل البيانات. تأكد من إعدادات النشر في جوجل شيت.";
+        }
+    }
+
+    function createCategoryButtons() {
+        const nav = document.getElementById('cat-nav');
+        const categories = [...new Set(allProducts.map(p => p.cat))];
+        categories.forEach(cat => {
+            let cls = (cat === 'ملابس رياضية') ? 'cat-btn-sport' : '';
+            nav.innerHTML += `<button class="cat-btn ${cls}" onclick="filterProducts('${cat}', this)">${cat}</button>`;
+        });
+    }
 
     function displayProducts(filter = 'الكل') {
         const container = document.getElementById('products-container');
         container.innerHTML = "";
-        const filtered = filter === 'الكل' ? products : products.filter(p => p.cat === filter);
+        const filtered = filter === 'الكل' ? allProducts : allProducts.filter(p => p.cat === filter);
         filtered.forEach(p => {
             container.innerHTML += `
                 <div class="card">
-                    <img src="${p.image}" alt="${p.name}">
+                    <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/150'">
                     <h3 style="font-size:13px; margin:5px 0;">${p.name}</h3>
                     <div class="product-desc">${p.desc}</div>
                     <div class="price">${p.price.toLocaleString()} ر.ي</div>
@@ -133,13 +143,6 @@
         });
     }
 
-    const categories = ['الكل', ...new Set(products.map(p => p.cat))];
-    const nav = document.getElementById('cat-nav');
-    categories.forEach(cat => {
-        let cls = (cat === 'ملابس رياضية') ? 'cat-btn-sport' : '';
-        nav.innerHTML += `<button class="cat-btn ${cat==='الكل'?'active':''} ${cls}" onclick="filterProducts('${cat}', this)">${cat}</button>`;
-    });
-
     function filterProducts(cat, btn) {
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -147,7 +150,7 @@
     }
 
     function addToCart(productId) {
-        const item = products.find(p => p.id === productId);
+        const item = allProducts.find(p => p.id === productId);
         cart.push({...item, cartId: Date.now() + Math.random()});
         updateCartUI();
         showToast();
@@ -175,7 +178,6 @@
                     </div>
                 </div>
             `).join('');
-            
             const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
             totalSpan.innerText = (subtotal + deliveryCost).toLocaleString();
         } else {
@@ -184,7 +186,6 @@
     }
 
     function closeCart() { document.getElementById('cart-box').style.display = 'none'; }
-
     function showToast() {
         const x = document.getElementById("toast");
         x.className = "show";
@@ -198,26 +199,16 @@
         const deliveryCost = parseInt(document.getElementById('delivery-type').value);
         const payment = document.getElementById('payment-method').value;
 
-        if (!name || !address) { alert("أدخل اسمك وعنوانك لخدمتك بشكل أسرع!"); return; }
+        if (!name || !address) { alert("أدخل بياناتك لخدمتك!"); return; }
 
         const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-        let msg = `*طلب جديد - متجر الأحقاف* 🛒\n\n`;
-        msg += `👤 *الزبون:* ${name}\n`;
-        msg += `📍 *العنوان:* ${address}\n`;
-        msg += `--------------------------\n`;
-        cart.forEach((item, index) => {
-            msg += `${index + 1}. ${item.name} (${item.id})\n`;
-        });
-        msg += `--------------------------\n`;
-        msg += `🚚 *التوصيل:* ${deliveryType}\n`;
-        msg += `💳 *طريقة الدفع:* ${payment}\n`;
-        msg += `💰 *الإجمالي النهائي: ${(subtotal + deliveryCost).toLocaleString()} ر.ي*\n\n`;
-        msg += `رابط المتجر: ${window.location.href}`;
-
+        let msg = `*طلب جديد - متجر الأحقاف* 🛒\n\n👤 *الزبون:* ${name}\n📍 *العنوان:* ${address}\n--------------------------\n`;
+        cart.forEach((item, index) => { msg += `${index + 1}. ${item.name} (${item.id})\n`; });
+        msg += `--------------------------\n🚚 *التوصيل:* ${deliveryType}\n💳 *طريقة الدفع:* ${payment}\n💰 *الإجمالي: ${(subtotal + deliveryCost).toLocaleString()} ر.ي*`;
         window.open(`https://wa.me/967778900391?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    displayProducts();
+    loadProducts();
 </script>
 </body>
 </html>
