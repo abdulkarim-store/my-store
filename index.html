@@ -9,22 +9,7 @@
         :root { --main-color: #5E0B15; --gold-color: #D4AF37; --light-gold: #FFD700; --sport-color: #0056b3; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; padding-bottom: 120px; }
         
-        /* شريط الإعلانات - مخفي افتراضياً */
-        #announcement-bar {
-            background: linear-gradient(90deg, var(--gold-color), var(--light-gold), var(--gold-color));
-            color: var(--main-color);
-            padding: 8px 0;
-            font-weight: bold;
-            font-size: 14px;
-            overflow: hidden;
-            white-space: nowrap;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1100;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            display: none; /* لن يظهر إلا بوجود نص في الجدول */
-        }
+        #announcement-bar { background: linear-gradient(90deg, var(--gold-color), var(--light-gold), var(--gold-color)); color: var(--main-color); padding: 8px 0; font-weight: bold; font-size: 14px; overflow: hidden; white-space: nowrap; position: fixed; top: 0; width: 100%; z-index: 1100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: none; }
         .scrolling-text { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(100%); } }
 
@@ -33,13 +18,13 @@
         .tagline { font-size: 12px; color: var(--light-gold); opacity: 0.9; margin-top: 5px; }
         
         .category-nav { background: white; padding: 10px; display: flex; justify-content: center; gap: 8px; overflow-x: auto; border-bottom: 1px solid #ddd; position: sticky; top: 98px; z-index: 999; transition: top 0.3s; }
-        .cat-btn { background: #fdf2f2; border: 1px solid var(--main-color); color: var(--main-color); padding: 6px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; white-space: nowrap; font-size: 14px; }
+        .cat-btn { background: #fdf2f2; border: 1px solid var(--main-color); color: var(--main-color); padding: 6px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; white-space: nowrap; font-size: 14px; border: 1px solid var(--main-color); }
         .cat-btn.active { background: var(--main-color); color: var(--light-gold); }
-        .cat-btn-sport.active { background: var(--sport-color) !important; color: white; border-color: var(--sport-color); }
 
         .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; max-width: 1200px; margin: 20px auto 0 auto; }
         .card { position: relative; background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border: 1px solid #eee; overflow: hidden; }
         .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; }
+        
         .badge { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 5px; color: white; font-size: 10px; font-weight: bold; z-index: 5; }
         .badge-new { background: #28a745; }
         .badge-discount { background: #dc3545; }
@@ -47,11 +32,12 @@
         .price { color: var(--main-color); font-weight: bold; font-size: 17px; margin: 8px 0; }
         .btn-add { background: var(--main-color); color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-        .cart-container { position: fixed; bottom: 0; width: 100%; background: white; border-top: 3px solid var(--gold-color); box-shadow: 0 -5px 15px rgba(0,0,0,0.2); z-index: 2000; padding: 10px; display: none; max-height: 80vh; overflow-y: auto; }
-        .checkout-form input, .checkout-form select { width: 95%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 5px; }
-        .btn-send { background: #25D366; color: white; border: none; padding: 15px; border-radius: 35px; font-weight: bold; width: 100%; font-size: 17px; cursor: pointer; }
+        /* السلة - تأكد من ظهورها */
+        .cart-container { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 3px solid var(--gold-color); box-shadow: 0 -5px 15px rgba(0,0,0,0.2); z-index: 2000; padding: 15px; display: none; max-height: 85vh; overflow-y: auto; box-sizing: border-box; }
+        .checkout-form input, .checkout-form select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; box-sizing: border-box; }
+        .btn-send { background: #25D366; color: white; border: none; padding: 15px; border-radius: 35px; font-weight: bold; width: 100%; font-size: 18px; cursor: pointer; margin-top: 10px; }
         
-        #toast { visibility: hidden; background: #333; color: #fff; text-align: center; border-radius: 30px; padding: 10px 20px; position: fixed; z-index: 3000; left: 50%; transform: translateX(-50%); bottom: 150px; }
+        #toast { visibility: hidden; background: #333; color: #fff; text-align: center; border-radius: 30px; padding: 12px 25px; position: fixed; z-index: 3000; left: 50%; transform: translateX(-50%); bottom: 150px; }
         #toast.show { visibility: visible; animation: f-in 0.5s, f-out 0.5s 2.5s; }
         @keyframes f-in { from {bottom: 130px; opacity: 0;} to {bottom: 150px; opacity: 1;} }
     </style>
@@ -73,26 +59,37 @@
     <button class="cat-btn active" onclick="filterProducts('الكل', this)">الكل</button>
 </div>
 
+<div id="loading" style="text-align:center; padding:50px;">جاري تحميل البضاعة... 🔄</div>
 <div class="products-grid" id="products-container"></div>
 
 <div class="cart-container" id="cart-box">
-    <h3 style="text-align: center; margin-top: 0; color: var(--main-color);">مراجعة الطلب 📋</h3>
-    <div id="cart-list" style="margin-bottom: 15px;"></div>
-    <div class="checkout-form" style="background:#fdf2f2; padding:15px; border-radius:8px;">
-        <input type="text" id="cust-name" placeholder="الاسم الكامل">
-        <input type="text" id="cust-address" placeholder="العنوان">
+    <h3 style="text-align: center; margin-top: 0; color: var(--main-color);">تأكيد طلبك 📋</h3>
+    <div id="cart-list" style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;"></div>
+    
+    <div class="checkout-form">
+        <label style="font-size: 12px; font-weight: bold;">الاسم الكامل:</label>
+        <input type="text" id="cust-name" placeholder="مثلاً: محمد اليافعي">
+        
+        <label style="font-size: 12px; font-weight: bold;">العنوان:</label>
+        <input type="text" id="cust-address" placeholder="المنطقة - الشارع">
+        
+        <label style="font-size: 12px; font-weight: bold;">التوصيل:</label>
         <select id="delivery-type" onchange="updateCartUI()">
             <option value="0">استلام من المحل</option>
             <option value="1000">داخل المدينة (1000 ر.ي)</option>
             <option value="3000">خارج المدينة (3000 ر.ي)</option>
         </select>
+        
+        <label style="font-size: 12px; font-weight: bold;">الدفع:</label>
         <select id="payment-method">
             <option value="عند الاستلام">الدفع عند الاستلام</option>
             <option value="الكريمي">تحويل الكريمي</option>
         </select>
     </div>
+    
     <div style="text-align:center; font-size:20px; font-weight:bold; margin:15px 0;">الإجمالي: <span id="cart-total">0</span> ر.ي</div>
-    <button class="btn-send" onclick="sendOrder()">إرسال عبر واتساب 💬</button>
+    <button class="btn-send" onclick="sendOrder()">تأكيد وإرسال الطلب (واتساب) 💬</button>
+    <button style="width:100%; background:none; border:none; color:gray; margin-top:10px; cursor:pointer; text-decoration: underline;" onclick="closeCart()">تعديل السلة</button>
 </div>
 
 <script>
@@ -104,50 +101,44 @@
         try {
             const response = await fetch(sheetURL);
             const data = await response.text();
-            const rows = data.split('\n').slice(1);
+            // تقسيم السطور وتنظيفها من الفراغات المزعجة
+            const rows = data.split(/\r?\n/).slice(1);
             
             allProducts = rows.map(row => {
-                const col = row.split(',');
+                const col = row.split(',').map(cell => cell.trim()); // تنظيف كل خانة
                 if (col.length < 5) return null;
                 return {
-                    id: col[0].trim(),
-                    name: col[1].trim(),
-                    price: parseInt(col[2].trim()) || 0,
-                    image: col[3].trim(),
-                    cat: col[4].trim(),
-                    desc: col[5] ? col[5].trim() : "",
-                    status: col[6] ? col[6].trim() : ""
+                    id: col[0],
+                    name: col[1],
+                    price: parseInt(col[2]) || 0,
+                    image: col[3],
+                    cat: col[4],
+                    desc: col[5] || "",
+                    status: col[6] || ""
                 };
-            }).filter(p => p !== null);
+            }).filter(p => p !== null && p.id !== "");
 
-            // ميزة التحكم بالشريط الإعلاني
+            // فحص الإعلان
             const msgRow = allProducts.find(p => p.id === "MESSAGE");
-            const bar = document.getElementById('announcement-bar');
-            const header = document.getElementById('main-header');
-            const nav = document.getElementById('cat-nav');
-
             if (msgRow && msgRow.name) {
-                document.getElementById('announcement-text').innerText = msgRow.name + " " + (msgRow.name + " ").repeat(5);
-                bar.style.display = 'block';
-                header.style.top = '35px';
-                nav.style.top = '133px';
-                // إزالة رسالة الإعلان من قائمة المنتجات حتى لا تظهر ككرت
+                document.getElementById('announcement-text').innerText = (msgRow.name + "   ").repeat(10);
+                document.getElementById('announcement-bar').style.display = 'block';
+                document.getElementById('main-header').style.top = '35px';
+                document.getElementById('cat-nav').style.top = '133px';
                 allProducts = allProducts.filter(p => p.id !== "MESSAGE");
-            } else {
-                bar.style.display = 'none';
-                header.style.top = '0';
-                nav.style.top = '98px';
             }
 
+            document.getElementById('loading').style.display = 'none';
             createCategoryButtons();
             displayProducts();
-        } catch (e) { console.log("Error loading data"); }
+        } catch (e) { document.getElementById('loading').innerText = "خطأ في الاتصال بالجدول!"; }
     }
 
     function createCategoryButtons() {
         const nav = document.getElementById('cat-nav');
         const categories = [...new Set(allProducts.map(p => p.cat))];
         categories.forEach(cat => {
+            if(!cat) return;
             let cls = (cat === 'ملابس رياضية') ? 'cat-btn-sport' : '';
             nav.innerHTML += `<button class="cat-btn ${cls}" onclick="filterProducts('${cat}', this)">${cat}</button>`;
         });
@@ -178,33 +169,51 @@
     }
 
     function addToCart(productId) {
+        // البحث عن المنتج مع تنظيف الـ ID لضمان المطابقة
         const item = allProducts.find(p => p.id === productId);
-        cart.push({...item, cartId: Date.now() + Math.random()});
-        updateCartUI();
-        const t = document.getElementById("toast"); t.className = "show"; setTimeout(() => { t.className = ""; }, 3000);
+        if (item) {
+            cart.push({...item, cartId: Date.now() + Math.random()});
+            updateCartUI();
+            const t = document.getElementById("toast"); t.className = "show"; setTimeout(() => { t.className = ""; }, 3000);
+        } else {
+            alert("خطأ: لم يتم العثور على المنتج في البيانات!");
+        }
     }
 
     function updateCartUI() {
         const box = document.getElementById('cart-box');
         const list = document.getElementById('cart-list');
-        const del = parseInt(document.getElementById('delivery-type').value);
+        const del = parseInt(document.getElementById('delivery-type').value) || 0;
+        
         if (cart.length > 0) {
             box.style.display = 'block';
-            list.innerHTML = cart.map(item => `<div style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #eee;"><span>${item.name}</span><button onclick="removeFromCart(${item.cartId})" style="border:none; background:none; color:red;">❌</button></div>`).join('');
+            list.innerHTML = cart.map(item => `
+                <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px dotted #ccc;">
+                    <span>${item.name}</span>
+                    <button onclick="removeFromCart(${item.cartId})" style="border:none; background:none; color:red; cursor:pointer; font-weight:bold;">حذف ❌</button>
+                </div>`).join('');
             const sub = cart.reduce((s, i) => s + i.price, 0);
             document.getElementById('cart-total').innerText = (sub + del).toLocaleString();
-        } else { box.style.display = 'none'; }
+        } else {
+            box.style.display = 'none';
+        }
     }
 
     function removeFromCart(id) { cart = cart.filter(i => i.cartId !== id); updateCartUI(); }
+    function closeCart() { document.getElementById('cart-box').style.display = 'none'; }
 
     function sendOrder() {
-        const name = document.getElementById('cust-name').value;
-        const addr = document.getElementById('cust-address').value;
-        if (!name || !addr) { alert("أكمل بياناتك!"); return; }
-        let msg = `*طلب جديد - متجر الأحقاف*\n👤 الزبون: ${name}\n📍 العنوان: ${addr}\n----------------\n`;
+        const name = document.getElementById('cust-name').value.trim();
+        const addr = document.getElementById('cust-address').value.trim();
+        const delType = document.getElementById('delivery-type').options[document.getElementById('delivery-type').selectedIndex].text;
+        
+        if (!name || !addr) { alert("لطفاً، أكمل اسمك وعنوانك!"); return; }
+        if (cart.length === 0) { alert("السلة فارغة!"); return; }
+
+        let msg = `*طلب جديد من متجر الأحقاف* 🛒\n\n👤 *الزبون:* ${name}\n📍 *العنوان:* ${addr}\n----------------\n`;
         cart.forEach((item, i) => { msg += `${i+1}. ${item.name} (${item.id})\n`; });
-        msg += `----------------\n💰 الإجمالي: ${document.getElementById('cart-total').innerText} ر.ي`;
+        msg += `----------------\n🚚 *التوصيل:* ${delType}\n💰 *الإجمالي النهائي:* ${document.getElementById('cart-total').innerText} ر.ي`;
+        
         window.open(`https://wa.me/967778900391?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
