@@ -7,15 +7,110 @@
     <title>متجر الأحقاف 🇾🇪</title>
     <style>
         :root { --main-color: #5E0B15; --gold-color: #D4AF37; --light-gold: #FFD700; --sport-color: #0056b3; }
-        body { font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; padding-bottom: 120px; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; padding-bottom: 120px; }
         
         /* شريط الإعلانات */
         #announcement-bar { background: linear-gradient(90deg, var(--gold-color), var(--light-gold), var(--gold-color)); color: var(--main-color); font-weight: bold; font-size: 13px; overflow: hidden; white-space: nowrap; position: fixed; top: 0; width: 100%; z-index: 1100; display: none; height: 35px; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .scrolling-text { display: inline-block; padding-left: 100%; animation: marquee 25s linear infinite; }
+        .scrolling-text { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(100%); } }
 
-        /* الهيدر الذي يحتوي على الشعار */
-        .header { background: linear-gradient(135deg, var(--main-color), #3e070e); color: var(--light-gold); padding: 20px 10px 25px 10px; text-align: center; border-bottom: 4px solid var(--gold-color); transition: padding-top 0.3s; }
+        /* الهيدر والشعار المبرمج */
+        .header { background: linear-gradient(135deg, var(--main-color), #3e070e); color: var(--light-gold); padding: 20px 10px; text-align: center; border-bottom: 4px solid var(--gold-color); transition: 0.3s; }
         
-        /* تصميم الشعار الدائري المصغر */
-        .mini-logo { position: relative; width: 85px; height: 85px; border-radius: 50%; background-color: var(--main-color); border: 2px solid var(--gold-color); display: flex; justify-content: center; align-items: center; overflow: hidden; margin: 0 auto 10px auto; box-shadow: 0 5px 15px rgba(0,0,0,
+        .css-logo { width: 80px; height: 80px; background-color: var(--main-color); border: 3px solid var(--gold-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 10px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.4); color: var(--gold-color); font-family: 'Amiri', serif; font-size: 22px; font-weight: bold; text-shadow: 1px 1px 2px #000; }
+        
+        .logo-text { font-family: 'Amiri', serif; font-size: 28px; margin: 0; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+        .tagline { font-size: 13px; color: #fff; opacity: 0.9; margin-top: 5px; letter-spacing: 1px; }
+        
+        /* أدوات البحث والأقسام */
+        #sticky-tools { position: sticky; top: 0; z-index: 999; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; }
+        .search-container { padding: 10px 15px; border-bottom: 1px solid #eee; }
+        .search-input { width: 100%; padding: 10px 15px; border-radius: 20px; border: 2px solid #eee; font-family: inherit; outline: none; box-sizing: border-box; }
+        .search-input:focus { border-color: var(--gold-color); }
+        
+        .category-nav { padding: 10px; display: flex; justify-content: center; gap: 8px; overflow-x: auto; background: #fdfdfd; }
+        .cat-btn { background: #fdf2f2; border: 1px solid var(--main-color); color: var(--main-color); padding: 6px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; white-space: nowrap; }
+        .cat-btn.active { background: var(--main-color); color: var(--light-gold); }
+
+        /* المنتجات */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; max-width: 1200px; margin: 0 auto; }
+        .card { position: relative; background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; }
+        .badge { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 5px; color: white; font-size: 10px; font-weight: bold; z-index: 5; }
+        .badge-new { background: #28a745; }
+        .badge-discount { background: #dc3545; }
+        .price { color: var(--main-color); font-weight: bold; font-size: 17px; margin: 8px 0; }
+        .btn-add { background: var(--main-color); color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; font-family: inherit;}
+
+        /* السلة */
+        .cart-container { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 3px solid var(--gold-color); box-shadow: 0 -5px 15px rgba(0,0,0,0.2); z-index: 2000; padding: 15px; display: none; max-height: 85vh; overflow-y: auto; box-sizing: border-box; border-radius: 20px 20px 0 0; }
+        .checkout-form input, .checkout-form select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-family: inherit;}
+        .btn-send { background: #25D366; color: white; border: none; padding: 15px; border-radius: 35px; font-weight: bold; width: 100%; font-size: 18px; cursor: pointer; font-family: inherit;}
+
+        #toast { visibility: hidden; background: #333; color: #fff; text-align: center; border-radius: 30px; padding: 10px 20px; position: fixed; z-index: 3000; left: 50%; transform: translateX(-50%); bottom: 150px; }
+        #toast.show { visibility: visible; animation: f-in 0.5s, f-out 0.5s 2.5s; }
+        @keyframes f-in { from {bottom: 130px; opacity: 0;} to {bottom: 150px; opacity: 1;} }
+    </style>
+</head>
+<body>
+
+<div id="announcement-bar">
+    <div class="scrolling-text" id="announcement-text"></div>
+</div>
+
+<div id="toast">تمت الإضافة للسلة 🛒</div>
+
+<div class="header" id="main-header">
+    <div class="css-logo">الأحقاف</div>
+    <h1 class="logo-text">متجر الأحقاف</h1>
+    <div class="tagline">الفخامة والجودة بين يديك 🇾🇪</div>
+</div>
+
+<div id="sticky-tools">
+    <div class="search-container">
+        <input type="text" class="search-input" id="search-input" placeholder="🔍 ابحث عن منتج..." oninput="handleSearch()">
+    </div>
+    <div class="category-nav" id="cat-nav">
+        <button class="cat-btn active" onclick="filterProducts('الكل', this)">الكل</button>
+    </div>
+</div>
+
+<div id="loading" style="text-align:center; padding:50px; font-weight:bold; color:var(--main-color);">جاري الاتصال بالمخزن... 🔄</div>
+<div class="products-grid" id="products-container"></div>
+
+<div class="cart-container" id="cart-box">
+    <h3 style="text-align: center; margin-top: 0; color: var(--main-color);">تأكيد طلبك 📋</h3>
+    <div id="cart-list" style="margin-bottom: 15px; border-bottom: 1px solid #eee;"></div>
+    <div class="checkout-form">
+        <input type="text" id="cust-name" placeholder="الاسم الكامل">
+        <input type="text" id="cust-address" placeholder="العنوان التفصيلي">
+        <select id="delivery-type" onchange="updateCartUI()">
+            <option value="0">استلام من المحل</option>
+            <option value="1000">داخل المدينة (1000 ر.ي)</option>
+            <option value="3000">خارج المدينة (3000 ر.ي)</option>
+        </select>
+        <select id="payment-method">
+            <option value="عند الاستلام">الدفع عند الاستلام</option>
+            <option value="تحويل الكريمي">تحويل عبر الكريمي</option>
+        </select>
+    </div>
+    <div style="text-align:center; font-size:20px; font-weight:bold; margin:15px 0;">الإجمالي: <span id="cart-total">0</span> ر.ي</div>
+    <button class="btn-send" onclick="sendOrder()">تأكيد الطلب عبر واتساب 💬</button>
+    <button style="width:100%; background:none; border:none; color:gray; margin-top:10px; cursor:pointer;" onclick="closeCart()">تعديل السلة</button>
+</div>
+
+<script>
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQHC7riu2zON61mN-dYSfUanReM2Z8dvRDIzWcCIIExj5EHSp7Z-Nnnu8IW14EX7pXEkzChZjkabMTx/pub?output=csv";
+    let allProducts = [];
+    let cart = [];
+    let currentCategory = 'الكل';
+
+    async function loadProducts() {
+        try {
+            const response = await fetch(sheetURL);
+            const data = await response.text();
+            const rows = data.split(/\r?\n/).slice(1);
+            
+            allProducts = rows.map(row => {
+                const col = row.split(',').map(cell => cell.trim());
+                if (col.length < 5) return null;
