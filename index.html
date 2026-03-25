@@ -100,7 +100,9 @@
 </div>
 
 <script>
+    // تم وضع الرابط الجديد الخاص بك هنا!
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbf7jYpxc4y2a7mGrk59giTfwHJVoarTBULexS5h8urHxVZHqVzr2A-i5O9Xub76r5eCoOeG71f_Xn/pub?output=csv";
+    
     let allProducts = [];
     let cart = [];
     let currentCategory = 'الكل';
@@ -109,8 +111,38 @@
         try {
             const response = await fetch(sheetURL);
             const data = await response.text();
-            const rows = data.split(/\r?\n/).slice(1);
             
-            allProducts = rows.map(row => {
+            // تنظيف البيانات والتأكد من عدم وجود أخطاء في القراءة
+            const rows = data.split(/\r?\n/).filter(row => row.trim() !== "");
+            if (rows.length < 2) {
+                document.getElementById('loading').innerHTML = "الجدول فارغ أو جاري التحديث من جوجل...<br>رجاءً تأكد من كتابة المنتجات في الجدول.";
+                return;
+            }
+
+            const dataRows = rows.slice(1);
+            
+            allProducts = dataRows.map(row => {
                 const col = row.split(',').map(cell => cell.trim());
-                if (col.length < 5) return null;
+                if (col.length < 3) return null; // تجاهل الأسطر غير المكتملة
+                return {
+                    id: col[0] || Math.random().toString(), 
+                    name: col[1] || "منتج بدون اسم", 
+                    price: parseInt(col[2]) || 0,
+                    image: col[3] || "https://via.placeholder.com/150", 
+                    cat: col[4] || "أخرى", 
+                    desc: col[5] || "", 
+                    status: col[6] || ""
+                };
+            }).filter(p => p !== null && p.name !== "منتج بدون اسم");
+
+            const msgRow = allProducts.find(p => p.id === "MESSAGE");
+            if (msgRow && msgRow.name) {
+                document.getElementById('announcement-text').innerText = (msgRow.name + "   ").repeat(10);
+                document.getElementById('announcement-bar').style.display = 'flex';
+                document.getElementById('main-header').style.paddingTop = '55px'; 
+                document.getElementById('sticky-tools').style.top = '35px'; 
+                allProducts = allProducts.filter(p => p.id !== "MESSAGE");
+            } else {
+                document.getElementById('announcement-bar').style.display = 'none';
+                document.getElementById('main-header').style.paddingTop = '20px';
+                document.getElementById('sticky-
