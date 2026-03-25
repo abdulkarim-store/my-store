@@ -100,7 +100,8 @@
 </div>
 
 <script>
-    // تم وضع الرابط الجديد الخاص بك هنا!
+<script>
+    // رابطك السليم 100%
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbf7jYpxc4y2a7mGrk59giTfwHJVoarTBULexS5h8urHxVZHqVzr2A-i5O9Xub76r5eCoOeG71f_Xn/pub?output=csv";
     
     let allProducts = [];
@@ -109,31 +110,36 @@
 
     async function loadProducts() {
         try {
-            const response = await fetch(sheetURL);
+            // الحيلة السحرية: إضافة وقت عشوائي للرابط لمنع الكاش وإجبار جوجل على التحديث فوراً
+            const noCacheURL = sheetURL + "&t=" + new Date().getTime();
+            const response = await fetch(noCacheURL, { cache: 'no-store' });
             const data = await response.text();
             
-            // تنظيف البيانات والتأكد من عدم وجود أخطاء في القراءة
             const rows = data.split(/\r?\n/).filter(row => row.trim() !== "");
+            
+            // التأكد من وجود منتجات غير العناوين
             if (rows.length < 2) {
-                document.getElementById('loading').innerHTML = "الجدول فارغ أو جاري التحديث من جوجل...<br>رجاءً تأكد من كتابة المنتجات في الجدول.";
+                document.getElementById('products-container').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:50px; color:gray;">الجدول متصل، لكنه يظهر فارغاً. تأكد من كتابة المنتجات في السطر الثاني وما بعده.</div>`;
+                document.getElementById('loading').style.display = 'none';
                 return;
             }
 
             const dataRows = rows.slice(1);
             
             allProducts = dataRows.map(row => {
-                const col = row.split(',').map(cell => cell.trim());
-                if (col.length < 3) return null; // تجاهل الأسطر غير المكتملة
+                // معالجة الفواصل المزعجة
+                const col = row.split(',').map(cell => cell.replace(/"/g, '').trim());
+                if (col.length < 3) return null; 
                 return {
                     id: col[0] || Math.random().toString(), 
-                    name: col[1] || "منتج بدون اسم", 
+                    name: col[1] || "بدون اسم", 
                     price: parseInt(col[2]) || 0,
                     image: col[3] || "https://via.placeholder.com/150", 
-                    cat: col[4] || "أخرى", 
+                    cat: col[4] || "عام", 
                     desc: col[5] || "", 
                     status: col[6] || ""
                 };
-            }).filter(p => p !== null && p.name !== "منتج بدون اسم");
+            }).filter(p => p !== null && p.id !== "" && p.name !== "بدون اسم");
 
             const msgRow = allProducts.find(p => p.id === "MESSAGE");
             if (msgRow && msgRow.name) {
@@ -142,7 +148,104 @@
                 document.getElementById('main-header').style.paddingTop = '55px'; 
                 document.getElementById('sticky-tools').style.top = '35px'; 
                 allProducts = allProducts.filter(p => p.id !== "MESSAGE");
-            } else {
-                document.getElementById('announcement-bar').style.display = 'none';
-                document.getElementById('main-header').style.paddingTop = '20px';
-                document.getElementById('sticky-
+            }
+
+            document.getElementById('loading').style.display = 'none';
+            createCategoryButtons();
+            displayProducts();
+        } catch (e) { 
+            document.getElementById('loading').innerHTML = "حدث خطأ في الاتصال. تأكد من الإنترنت أو إعدادات الجدول."; 
+            console.error(e);
+        }
+    }
+
+    function createCategoryButtons() {
+        const nav = document.getElementById('cat-nav');
+        nav.innerHTML = `<button class="cat-btn active" onclick="filterProducts('الكل', this)">الكل</button>`;
+        const categories = [...new Set(allProducts.map(p => p.cat))];
+        categories.forEach(cat => {
+            if(cat && cat !== "عام") nav.innerHTML += `<button class="cat-btn" onclick="filterProducts('${cat}', this)">${cat}</button>`;
+        });
+    }
+
+    function handleSearch() { displayProducts(currentCategory); }
+
+    function displayProducts(category = 'الكل') {
+        currentCategory = category;
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        const container = document.getElementById('products-container');
+        container.innerHTML = "";
+
+        const filtered = allProducts.filter(p => {
+            const matchesCat = (category === 'الكل' || p.cat === category);
+            const matchesSearch = p.name.toLowerCase().includes(searchTerm) || p.desc.toLowerCase().includes(searchTerm);
+            return matchesCat && matchesSearch;
+        });
+
+        if(filtered.length === 0) {
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:50px; color:gray;">عذراً، لم نجد منتجات! 🔍</div>`;
+            return;
+        }
+
+        filtered.forEach(p => {
+            let badge = p.status === "جديد" ? `<div class="badge badge-new">وصل حديثاً</div>` : (p.status === "تخفيض" ? `<div class="badge badge-discount">عرض خاص</div>` : "");
+            container.innerHTML += `
+                <div class="card">
+                    ${badge}
+                    <img src="${p.image}" onerror="this.src='https://via.placeholder.com/150'">
+                    <h3 style="font-size:13px; margin:8px 0;">${p.name}</h3>
+                    <div style="font-size:11px; color:#777; margin-bottom:5px;">${p.desc}</div>
+                    <div class="price">${p.price.toLocaleString()} ر.ي</div>
+                    <button class="btn-add" onclick="addToCart('${p.id}')">أضف للسلة 🛒</button>
+                </div>`;
+        });
+    }
+
+    function filterProducts(cat, btn) {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        displayProducts(cat);
+    }
+
+    function addToCart(productId) {
+        const item = allProducts.find(p => p.id === productId);
+        if (item) {
+            cart.push({...item, cartId: Date.now() + Math.random()});
+            updateCartUI();
+            const t = document.getElementById("toast"); t.className = "show"; setTimeout(() => { t.className = ""; }, 3000);
+        }
+    }
+
+    function updateCartUI() {
+        const box = document.getElementById('cart-box');
+        const list = document.getElementById('cart-list');
+        const del = parseInt(document.getElementById('delivery-type').value) || 0;
+        if (cart.length > 0) {
+            box.style.display = 'block';
+            list.innerHTML = cart.map(item => `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px dotted #ccc;"><span>${item.name}</span><button onclick="removeFromCart(${item.cartId})" style="border:none; background:none; color:red; cursor:pointer;">❌</button></div>`).join('');
+            const sub = cart.reduce((s, i) => s + i.price, 0);
+            document.getElementById('cart-total').innerText = (sub + del).toLocaleString();
+        } else { box.style.display = 'none'; }
+    }
+
+    function removeFromCart(id) { cart = cart.filter(i => i.cartId !== id); updateCartUI(); }
+    function closeCart() { document.getElementById('cart-box').style.display = 'none'; }
+
+    function sendOrder() {
+        const name = document.getElementById('cust-name').value.trim();
+        const addr = document.getElementById('cust-address').value.trim();
+        const delType = document.getElementById('delivery-type').options[document.getElementById('delivery-type').selectedIndex].text;
+        const payment = document.getElementById('payment-method').value;
+
+        if (!name || !addr) { alert("لطفاً، أكمل اسمك وعنوانك!"); return; }
+        if (cart.length === 0) { alert("السلة فارغة!"); return; }
+        
+        let msg = `*طلب جديد من متجر الأحقاف* 🛒\n\n👤 *الزبون:* ${name}\n📍 *العنوان:* ${addr}\n----------------\n`;
+        cart.forEach((item, i) => { msg += `${i+1}. ${item.name} (${item.id})\n`; });
+        msg += `----------------\n🚚 *التوصيل:* ${delType}\n💳 *الدفع:* ${payment}\n💰 *الإجمالي النهائي:* ${document.getElementById('cart-total').innerText} ر.ي`;
+        
+        window.open(`https://wa.me/967778900391?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    loadProducts();
+</script>
